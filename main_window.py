@@ -12,6 +12,7 @@ class MainWindow:
 
         # Tabs
         self.records_tab = ttk.Frame(self.notebook)
+        RecordsTab(self.records_tab)
         self.reminders_tab = ttk.Frame(self.notebook)
         self.charts_tab = ttk.Frame(self.notebook)
 
