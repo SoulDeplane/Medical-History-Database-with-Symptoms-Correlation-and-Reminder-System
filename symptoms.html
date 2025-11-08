@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Symptom Correlation</h2>
+
+<form method="POST" class="form">
+    <input type="text" name="symptom" placeholder="Enter a symptom (e.g., fever)" required>
+    <button type="submit">Find Correlation</button>
+</form>
+
+{% if correlation %}
+<h3>Patients with matching symptoms:</h3>
+<table>
+    <tr><th>Patient Name</th><th>Symptoms</th></tr>
+    {% for row in correlation %}
+    <tr>
+        <td>{{ row[0] }}</td>
+        <td>{{ row[1] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+{% endblock %}
