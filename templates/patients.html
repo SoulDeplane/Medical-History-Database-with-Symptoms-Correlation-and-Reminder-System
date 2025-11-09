@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Patient Records</h2>
+
+<div class="form-container">
+    <h3>Add New Patient</h3>
+    <form action="/add_patient" method="POST" class="form">
+        <div class="form-row">
+            <input type="text" name="name" placeholder="Name" required>
+            <input type="number" name="age" placeholder="Age" required>
+            <select name="gender" required>
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+            <input type="text" name="contact" placeholder="Contact Info" required>
+        </div>
+        <button type="submit">Add Patient</button>
+    </form>
+</div>
+
+<h3>All Patients</h3>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Gender</th>
+        <th>Contact</th>
+        <th>Action</th>
+    </tr>
+    {% for p in patients %}
+    <tr>
+        <td>{{ p[0] }}</td>
+        <td>{{ p[1] }}</td>
+        <td>{{ p[2] }}</td>
+        <td>{{ p[3] }}</td>
+        <td>{{ p[4] }}</td>
+        <td><a href="/delete_patient/{{ p[0] }}" class="delete-btn">Delete</a></td>
+    </tr>
+    {% endfor %}
+    {% if not patients %}
+    <tr>
+        <td colspan="6" style="text-align: center;">No patients recorded yet.</td>
+    </tr>
+    {% endif %}
+</table>
+{% endblock %}

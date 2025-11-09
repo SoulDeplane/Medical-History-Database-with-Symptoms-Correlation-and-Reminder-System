@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Vitals Management</h2>
+
+<div class="form-container">
+    <h3>Add New Vital Signs</h3>
+    <form action="/add_vitals" method="POST" class="form">
+        <input type="number" name="patient_id" placeholder="Patient ID" required>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>Blood Pressure</label>
+                <input type="number" name="systolic_bp" placeholder="Systolic (mmHg)">
+                <input type="number" name="diastolic_bp" placeholder="Diastolic (mmHg)">
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <input type="number" name="heart_rate" placeholder="Heart Rate (BPM)">
+                <input type="number" step="0.1" name="temperature" placeholder="Temperature (°C/°F)">
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <input type="number" step="0.1" name="oxygen_saturation" placeholder="Oxygen Saturation (%)">
+                <input type="number" name="respiratory_rate" placeholder="Respiratory Rate (bpm)">
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <input type="number" step="0.1" name="weight" placeholder="Weight (kg/lbs)">
+                <input type="number" step="0.1" name="blood_glucose" placeholder="Blood Glucose (mg/dL)">
+            </div>
+        </div>
+        
+        <textarea name="notes" placeholder="Notes (optional)" rows="3"></textarea>
+        
+        <button type="submit">Add Vitals</button>
+    </form>
+</div>
+
+<h3>All Vital Signs Records</h3>
+<table class="vitals-table">
+    <tr>
+        <th>ID</th>
+        <th>Patient ID</th>
+        <th>Patient Name</th>
+        <th>Recorded At</th>
+        <th>BP</th>
+        <th>HR</th>
+        <th>Temp</th>
+        <th>SpO2</th>
+        <th>RR</th>
+        <th>Weight</th>
+        <th>Glucose</th>
+        <th>Notes</th>
+    </tr>
+    {% for v in vitals %}
+    <tr>
+        <td>{{ v[0] }}</td>
+        <td>{{ v[1] }}</td>
+        <td>{{ v[2] }}</td>
+        <td>{{ v[3] }}</td>
+        <td>{{ v[4] }}/{{ v[5] if v[5] else '-' }}</td>
+        <td>{{ v[6] if v[6] else '-' }}</td>
+        <td>{{ v[7] if v[7] else '-' }}</td>
+        <td>{{ v[8] if v[8] else '-' }}</td>
+        <td>{{ v[9] if v[9] else '-' }}</td>
+        <td>{{ v[10] if v[10] else '-' }}</td>
+        <td>{{ v[11] if v[11] else '-' }}</td>
+        <td>{{ v[12] if v[12] else '-' }}</td>
+    </tr>
+    {% endfor %}
+    {% if not vitals %}
+    <tr>
+        <td colspan="12" style="text-align: center;">No vital signs recorded yet.</td>
+    </tr>
+    {% endif %}
+</table>
+{% endblock %}
+

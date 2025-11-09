@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Welcome to the Medical History Database System</h1>
+<p>Comprehensive medical records management system with patient tracking, symptoms, medications, and vital signs
+    monitoring.</p>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 30px;">
+    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <h3 style="color: #0059b3; margin-top: 0;">👩‍⚕️ Patients</h3>
+        <p>Add and manage patient information including name, age, gender, and contact details.</p>
+        <a href="/patients" style="color: #0073e6; text-decoration: none; font-weight: 600;">View Patients →</a>
+    </div>
+
+    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <h3 style="color: #0059b3; margin-top: 0;">📋 Symptoms</h3>
+        <p>Record and track patient symptoms with severity ratings and duration information.</p>
+        <a href="/symptoms_manage" style="color: #0073e6; text-decoration: none; font-weight: 600;">View Symptoms →</a>
+    </div>
+
+    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <h3 style="color: #0059b3; margin-top: 0;">💊 Medications</h3>
+        <p>Track prescribed medications, dosages, frequencies, and treatment periods.</p>
+        <a href="/medications_manage" style="color: #0073e6; text-decoration: none; font-weight: 600;">View Medications
+            →</a>
+    </div>
+
+    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <h3 style="color: #0059b3; margin-top: 0;">📊 Vitals</h3>
+        <p>Monitor and record vital signs including blood pressure, heart rate, temperature, and more.</p>
+        <a href="/vitals_manage" style="color: #0073e6; text-decoration: none; font-weight: 600;">View Vitals →</a>
+    </div>
+
+    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <h3 style="color: #0059b3; margin-top: 0;">🔍 Symptom Correlation</h3>
+        <p>Search for patients with specific symptoms to identify patterns and correlations.</p>
+        <a href="/symptoms" style="color: #0073e6; text-decoration: none; font-weight: 600;">Search Symptoms →</a>
+    </div>
+</div>
+{% endblock %}

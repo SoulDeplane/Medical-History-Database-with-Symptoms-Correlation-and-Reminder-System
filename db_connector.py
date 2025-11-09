@@ -101,7 +101,210 @@ def get_patient_symptoms(connection, patient_id):
         print(f" The error '{e}' occurred")
     finally:
         cursor.close()
-        return symptoms
+    return symptoms
+
+def get_all_patients(connection):
+    """
+    Retrieves all patients from the database.
+    """
+    cursor = connection.cursor()
+    patients = []
+    try:
+        query = "SELECT PatientID, Name, Age, Gender, ContactInfo FROM Patient ORDER BY PatientID;"
+        
+        cursor.execute(query)
+        patients = cursor.fetchall()
+        print(f" Found {len(patients)} patient(s).")
+        
+    except Exception as e:
+        print(f" The error '{e}' occurred")
+    finally:
+        cursor.close()
+    return patients
+
+def delete_patient(connection, patient_id):
+    """
+    Deletes a patient from the database.
+    Note: This will fail if there are foreign key constraints (symptoms, medications, etc.)
+    """
+    cursor = connection.cursor()
+    success = False
+    try:
+        query = "DELETE FROM Patient WHERE PatientID = %s;"
+        
+        cursor.execute(query, (patient_id,))
+        connection.commit()
+        if cursor.rowcount > 0:
+            success = True
+            print(f" Patient with ID {patient_id} deleted successfully.")
+        else:
+            print(f" No patient found with ID {patient_id}.")
+        
+    except Exception as e:
+        print(f" The error '{e}' occurred")
+        connection.rollback()
+    finally:
+        cursor.close()
+    return success
+
+def find_symptom_correlation(connection, symptom_description):
+    """
+    Finds patients who have a specific symptom and returns their names and symptoms.
+    """
+    cursor = connection.cursor()
+    correlations = []
+    try:
+        query = """
+        SELECT p.Name, s.Description
+        FROM Patient p
+        INNER JOIN Symptom s ON p.PatientID = s.PatientID
+        WHERE LOWER(s.Description) LIKE LOWER(%s)
+        ORDER BY p.Name;
+        """
+        
+        cursor.execute(query, (f'%{symptom_description}%',))
+        correlations = cursor.fetchall()
+        print(f" Found {len(correlations)} correlation(s) for symptom '{symptom_description}'.")
+        
+    except Exception as e:
+        print(f" The error '{e}' occurred")
+    finally:
+        cursor.close()
+    return correlations
+
+def get_all_symptoms(connection):
+    """
+    Retrieves all symptoms with patient information.
+    """
+    cursor = connection.cursor()
+    symptoms = []
+    try:
+        query = """
+        SELECT s.SymptomID, s.PatientID, p.Name, s.Description, s.Severity, s.Duration, s.ReportDate
+        FROM Symptom s
+        INNER JOIN Patient p ON s.PatientID = p.PatientID
+        ORDER BY s.ReportDate DESC;
+        """
+        
+        cursor.execute(query)
+        symptoms = cursor.fetchall()
+        print(f" Found {len(symptoms)} symptom(s).")
+        
+    except Exception as e:
+        print(f" The error '{e}' occurred")
+    finally:
+        cursor.close()
+    return symptoms
+
+def get_all_medications(connection):
+    """
+    Retrieves all medications with patient information.
+    """
+    cursor = connection.cursor()
+    medications = []
+    try:
+        query = """
+        SELECT m.MedicationID, m.PatientID, p.Name, m.Name, m.Dosage, m.Frequency, m.StartDate, m.EndDate
+        FROM Medication m
+        INNER JOIN Patient p ON m.PatientID = p.PatientID
+        ORDER BY m.StartDate DESC;
+        """
+        
+        cursor.execute(query)
+        medications = cursor.fetchall()
+        print(f" Found {len(medications)} medication(s).")
+        
+    except Exception as e:
+        print(f" The error '{e}' occurred")
+    finally:
+        cursor.close()
+    return medications
+
+def add_vitals(connection, patient_id, systolic_bp=None, diastolic_bp=None, heart_rate=None, 
+               temperature=None, oxygen_saturation=None, respiratory_rate=None, 
+               weight=None, blood_glucose=None, notes=None):
+    """
+    Adds vital signs for a specific patient.
+    """
+    cursor = connection.cursor()
+    try:
+        query = """
+        INSERT INTO Vitals (PatientID, SystolicBP, DiastolicBP, HeartRate, Temperature, 
+                           OxygenSaturation, RespiratoryRate, Weight, BloodGlucose, Notes)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+        """
+        vital_data = (patient_id, systolic_bp, diastolic_bp, heart_rate, temperature,
+                     oxygen_saturation, respiratory_rate, weight, blood_glucose, notes)
+        
+        cursor.execute(query, vital_data)
+        connection.commit()
+        print(f" Vitals added successfully for patient ID {patient_id}.")
+        
+    except Exception as e:
+        print(f" The error '{e}' occurred")
+        # Rollback the transaction to clear the error state
+        try:
+            connection.rollback()
+        except:
+            pass
+    finally:
+        cursor.close()
+
+def get_all_vitals(connection):
+    """
+    Retrieves all vitals with patient information.
+    """
+    cursor = connection.cursor()
+    vitals = []
+    try:
+        query = """
+        SELECT v.VitalID, v.PatientID, p.Name, v.RecordedAt, v.SystolicBP, v.DiastolicBP, 
+               v.HeartRate, v.Temperature, v.OxygenSaturation, v.RespiratoryRate, 
+               v.Weight, v.BloodGlucose, v.Notes
+        FROM Vitals v
+        INNER JOIN Patient p ON v.PatientID = p.PatientID
+        ORDER BY v.RecordedAt DESC;
+        """
+        
+        cursor.execute(query)
+        vitals = cursor.fetchall()
+        print(f" Found {len(vitals)} vital record(s).")
+        
+    except Exception as e:
+        print(f" The error '{e}' occurred")
+        # Rollback the transaction to clear the error state
+        try:
+            connection.rollback()
+        except:
+            pass
+    finally:
+        cursor.close()
+    return vitals
+
+def get_patient_vitals(connection, patient_id):
+    """
+    Retrieves all vitals for a specific patient.
+    """
+    cursor = connection.cursor()
+    vitals = []
+    try:
+        query = """
+        SELECT VitalID, RecordedAt, SystolicBP, DiastolicBP, HeartRate, Temperature, 
+               OxygenSaturation, RespiratoryRate, Weight, BloodGlucose, Notes
+        FROM Vitals
+        WHERE PatientID = %s
+        ORDER BY RecordedAt DESC;
+        """
+        
+        cursor.execute(query, (patient_id,))
+        vitals = cursor.fetchall()
+        print(f" Found {len(vitals)} vital record(s) for patient ID {patient_id}.")
+        
+    except Exception as e:
+        print(f" The error '{e}' occurred")
+    finally:
+        cursor.close()
+    return vitals
 
 # --- Main Testing Block ---
 if __name__ == '__main__':

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Symptoms Management</h2>
+
+<div class="form-container">
+    <h3>Add New Symptom</h3>
+    <form action="/add_symptom" method="POST" class="form">
+        <input type="number" name="patient_id" placeholder="Patient ID" required>
+        <input type="text" name="description" placeholder="Symptom Description" required>
+        <input type="number" name="severity" placeholder="Severity (1-10)" min="1" max="10" required>
+        <input type="text" name="duration" placeholder="Duration (e.g., 2 days)" required>
+        <button type="submit">Add Symptom</button>
+    </form>
+</div>
+
+<h3>All Symptoms</h3>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Patient ID</th>
+        <th>Patient Name</th>
+        <th>Description</th>
+        <th>Severity</th>
+        <th>Duration</th>
+        <th>Report Date</th>
+    </tr>
+    {% for s in symptoms %}
+    <tr>
+        <td>{{ s[0] }}</td>
+        <td>{{ s[1] }}</td>
+        <td>{{ s[2] }}</td>
+        <td>{{ s[3] }}</td>
+        <td>{{ s[4] }}</td>
+        <td>{{ s[5] }}</td>
+        <td>{{ s[6] }}</td>
+    </tr>
+    {% endfor %}
+    {% if not symptoms %}
+    <tr>
+        <td colspan="7" style="text-align: center;">No symptoms recorded yet.</td>
+    </tr>
+    {% endif %}
+</table>
+{% endblock %}
+

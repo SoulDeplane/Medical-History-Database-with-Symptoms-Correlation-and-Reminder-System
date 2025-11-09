@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Medications Management</h2>
+
+<div class="form-container">
+    <h3>Add New Medication</h3>
+    <form action="/add_medication" method="POST" class="form">
+        <input type="number" name="patient_id" placeholder="Patient ID" required>
+        <input type="text" name="name" placeholder="Medication Name" required>
+        <input type="text" name="dosage" placeholder="Dosage (e.g., 500mg)" required>
+        <input type="text" name="frequency" placeholder="Frequency (e.g., Twice daily)" required>
+        <input type="date" name="start_date" placeholder="Start Date" required>
+        <input type="date" name="end_date" placeholder="End Date (optional)">
+        <button type="submit">Add Medication</button>
+    </form>
+</div>
+
+<h3>All Medications</h3>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Patient ID</th>
+        <th>Patient Name</th>
+        <th>Medication</th>
+        <th>Dosage</th>
+        <th>Frequency</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+    </tr>
+    {% for m in medications %}
+    <tr>
+        <td>{{ m[0] }}</td>
+        <td>{{ m[1] }}</td>
+        <td>{{ m[2] }}</td>
+        <td>{{ m[3] }}</td>
+        <td>{{ m[4] }}</td>
+        <td>{{ m[5] }}</td>
+        <td>{{ m[6] }}</td>
+        <td>{{ m[7] if m[7] else 'Ongoing' }}</td>
+    </tr>
+    {% endfor %}
+    {% if not medications %}
+    <tr>
+        <td colspan="8" style="text-align: center;">No medications recorded yet.</td>
+    </tr>
+    {% endif %}
+</table>
+{% endblock %}
+
