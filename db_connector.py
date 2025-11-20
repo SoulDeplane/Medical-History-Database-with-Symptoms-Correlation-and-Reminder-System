@@ -147,31 +147,6 @@ def delete_patient(connection, patient_id):
         cursor.close()
     return success
 
-def find_symptom_correlation(connection, symptom_description):
-    """
-    Finds patients who have a specific symptom and returns their names and symptoms.
-    """
-    cursor = connection.cursor()
-    correlations = []
-    try:
-        query = """
-        SELECT p.Name, s.Description
-        FROM Patient p
-        INNER JOIN Symptom s ON p.PatientID = s.PatientID
-        WHERE LOWER(s.Description) LIKE LOWER(%s)
-        ORDER BY p.Name;
-        """
-        
-        cursor.execute(query, (f'%{symptom_description}%',))
-        correlations = cursor.fetchall()
-        print(f" Found {len(correlations)} correlation(s) for symptom '{symptom_description}'.")
-        
-    except Exception as e:
-        print(f" The error '{e}' occurred")
-    finally:
-        cursor.close()
-    return correlations
-
 def get_all_symptoms(connection):
     """
     Retrieves all symptoms with patient information.

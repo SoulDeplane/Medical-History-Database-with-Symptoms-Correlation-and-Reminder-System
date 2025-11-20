@@ -171,6 +171,27 @@ table tr:hover {
     padding: 8px;
 }
 
+.chart-card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.chart-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.muted-text {
+    color: #6c757d;
+    margin: 0;
+}
+
 .delete-btn {
     color: #dc3545;
     text-decoration: none;

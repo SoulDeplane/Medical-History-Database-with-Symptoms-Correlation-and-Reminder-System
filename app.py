@@ -4,7 +4,6 @@ from db_connector import (
     add_patient, 
     get_all_patients, 
     delete_patient,
-    find_symptom_correlation,
     add_symptom,
     get_all_symptoms,
     add_medication,
@@ -151,7 +150,23 @@ def vitals_manage():
         return render_template('vitals_manage.html', vitals=[], error="Database connection failed")
     
     vitals_list = get_all_vitals(conn)
-    return render_template('vitals_manage.html', vitals=vitals_list)
+    vitals_chart = []
+    for record in vitals_list:
+        recorded_at = record[3]
+        vitals_chart.append({
+            "label": f"{record[2]} ({recorded_at.strftime('%Y-%m-%d %H:%M')})" if recorded_at else record[2],
+            "patient": record[2],
+            "timestamp": recorded_at.isoformat() if hasattr(recorded_at, "isoformat") and recorded_at else None,
+            "systolic_bp": record[4],
+            "diastolic_bp": record[5],
+            "heart_rate": record[6],
+            "temperature": record[7],
+            "oxygen_saturation": record[8],
+            "respiratory_rate": record[9],
+            "weight": record[10],
+            "blood_glucose": record[11]
+        })
+    return render_template('vitals_manage.html', vitals=vitals_list, vitals_chart=vitals_chart)
 
 @app.route('/add_vitals', methods=['POST'])
 def add_vitals_route():
@@ -179,20 +194,6 @@ def add_vitals_route():
         pass  # Handle error silently or add flash message
     
     return redirect(url_for('vitals_manage'))
-
-@app.route('/symptoms', methods=['GET', 'POST'])
-def symptoms():
-    """Display symptom correlation search."""
-    correlation = None
-    
-    if request.method == 'POST':
-        conn = get_connection()
-        if conn:
-            symptom = request.form.get('symptom')
-            if symptom:
-                correlation = find_symptom_correlation(conn, symptom)
-    
-    return render_template('symptoms.html', correlation=correlation)
 
 if __name__ == '__main__':
     # Initialize database connection

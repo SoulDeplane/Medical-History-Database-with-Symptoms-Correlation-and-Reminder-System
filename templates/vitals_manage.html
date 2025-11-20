@@ -2,11 +2,23 @@
 {% block content %}
 <h2>Vitals Management</h2>
 
+{% if vitals_chart %}
+<div class="chart-card">
+    <div class="chart-card__header">
+        <h3>Vitals Trends</h3>
+        <p class="muted-text">Recent readings across all patients</p>
+    </div>
+    <canvas id="vitalsTrendChart" height="140"></canvas>
+</div>
+{% else %}
+<p class="muted-text">Add vital records to visualize patient trends.</p>
+{% endif %}
+
 <div class="form-container">
     <h3>Add New Vital Signs</h3>
     <form action="/add_vitals" method="POST" class="form">
         <input type="number" name="patient_id" placeholder="Patient ID" required>
-        
+
         <div class="form-row">
             <div class="form-group">
                 <label>Blood Pressure</label>
@@ -14,30 +26,30 @@
                 <input type="number" name="diastolic_bp" placeholder="Diastolic (mmHg)">
             </div>
         </div>
-        
+
         <div class="form-row">
             <div class="form-group">
                 <input type="number" name="heart_rate" placeholder="Heart Rate (BPM)">
                 <input type="number" step="0.1" name="temperature" placeholder="Temperature (°C/°F)">
             </div>
         </div>
-        
+
         <div class="form-row">
             <div class="form-group">
                 <input type="number" step="0.1" name="oxygen_saturation" placeholder="Oxygen Saturation (%)">
                 <input type="number" name="respiratory_rate" placeholder="Respiratory Rate (bpm)">
             </div>
         </div>
-        
+
         <div class="form-row">
             <div class="form-group">
                 <input type="number" step="0.1" name="weight" placeholder="Weight (kg/lbs)">
                 <input type="number" step="0.1" name="blood_glucose" placeholder="Blood Glucose (mg/dL)">
             </div>
         </div>
-        
+
         <textarea name="notes" placeholder="Notes (optional)" rows="3"></textarea>
-        
+
         <button type="submit">Add Vitals</button>
     </form>
 </div>
@@ -80,5 +92,69 @@
     </tr>
     {% endif %}
 </table>
-{% endblock %}
 
+{% if vitals_chart %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const vitalsData = JSON.parse('{{ vitals_chart | tojson | safe }}');
+    const labels = vitalsData.map(entry => entry.label || entry.timestamp || entry.patient || 'Record');
+    function makeDataset(label, data, color) {
+        return {
+            label: label,
+            data: data,
+            borderColor: color,
+            backgroundColor: color,
+            tension: 0.3,
+            spanGaps: true
+        };
+    }
+
+    function asNumber(value) {
+        return (value === null || value === undefined || value === '') ? null : value;
+    }
+
+    const chartConfig = {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [
+                makeDataset('Heart Rate (BPM)', vitalsData.map(d => asNumber(d.heart_rate)), '#ff6384'),
+                makeDataset('Temperature', vitalsData.map(d => asNumber(d.temperature)), '#ff9f40'),
+                makeDataset('Systolic BP', vitalsData.map(d => asNumber(d.systolic_bp)), '#36a2eb'),
+                makeDataset('Diastolic BP', vitalsData.map(d => asNumber(d.diastolic_bp)), '#4bc0c0'),
+                makeDataset('Oxygen Saturation', vitalsData.map(d => asNumber(d.oxygen_saturation)), '#9966ff')
+            ]
+        },
+        options: {
+            responsive: true,
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                tooltip: {
+                    callbacks: {
+                        title: (items) => {
+                            const idx = items[0].dataIndex;
+                            const data = vitalsData[idx];
+                            return data.patient ? `${data.patient} • ${labels[idx]}` : labels[idx];
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false
+                }
+            }
+        }
+    };
+
+    const ctx = document.getElementById('vitalsTrendChart').getContext('2d');
+    new Chart(ctx, chartConfig);
+</script>
+{% endif %}
+{% endblock %}
